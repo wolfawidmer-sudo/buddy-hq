@@ -1,0 +1,25 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    # Linux ist günstiger als Windows (private Repos verbrauchen Actions-Minuten).
+    # Windows läuft erst im Release-Workflow.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Secret-Scan
+        run: node scripts/secret-scan.js
+      - name: Tests (ohne Fremdpakete)
+        run: npm test
