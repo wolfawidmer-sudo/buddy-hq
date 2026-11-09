@@ -11,7 +11,6 @@ permissions:
 jobs:
   test:
     # Linux ist günstiger als Windows (private Repos verbrauchen Actions-Minuten).
-    # Windows läuft erst im Release-Workflow.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -23,3 +22,22 @@ jobs:
         run: node scripts/secret-scan.js
       - name: Tests (ohne Fremdpakete)
         run: npm test
+
+  electron-smoke:
+    # Startet die echte App (Electron) unsichtbar, richtet einen Test-Zugang ein und öffnet jede Seite.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Pakete installieren
+        run: npm install --no-audit --no-fund
+      - name: Sandbox erlauben (Ubuntu 24)
+        run: sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: Selbsttest
+        env:
+          BUDDY_HQ_SMOKE: '1'
+        run: xvfb-run --auto-servernum npx electron . 2>&1 | tee smoke.log; grep -q '"ok": true' smoke.log

@@ -26,3 +26,15 @@ git config core.hooksPath .githooks
 - `src/main/` – Hauptprozess: Fenster, Sicherheit, später alle API-Aufrufe.
 - `src/renderer/` – Oberfläche (ohne Netzzugriff, strenge CSP).
 - `scripts/secret-scan.js` – Secret-Scan vor Commit/Push und im CI.
+
+## Tests
+
+- `npm test` – Rechnung, Kurse, Zeiträume, Login, Tresor, alle Dienste mit Attrappen (keine echten Anfragen).
+- CI startet zusätzlich die echte App unsichtbar (`BUDDY_HQ_SMOKE=1`), richtet einen Test-Zugang ein und öffnet jede Seite.
+- `node test/ui/harness.js <playwright> <chrome> <ordner>` – Screenshots aller Seiten mit Attrappen (nur Entwicklung).
+
+## Release (nur von Hand)
+
+1. Version in `package.json` erhöhen.
+2. GitHub → Actions → «Release» → «Run workflow».
+3. Der Lauf testet, baut `Buddy-HQ-Setup.exe` auf Windows und legt ein privates Release an.

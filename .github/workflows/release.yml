@@ -1,0 +1,60 @@
+name: Release
+
+# Startet NUR von Hand: GitHub → Actions → Release → «Run workflow».
+# Baut den Windows-Installer und legt ein privates Release mit der .exe an.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Secret-Scan
+        run: node scripts/secret-scan.js
+
+      - name: Tests
+        run: npm test
+
+      - name: Pakete installieren
+        run: npm install --no-audit --no-fund
+
+      - name: Selbsttest der App (Windows)
+        shell: pwsh
+        env:
+          BUDDY_HQ_SMOKE: '1'
+        run: |
+          npx electron . 2>&1 | Tee-Object -FilePath smoke.log
+          if (-not (Select-String -Path smoke.log -Pattern '"ok": true' -Quiet)) { throw 'Selbsttest fehlgeschlagen' }
+
+      - name: Installer bauen
+        run: npx electron-builder --win nsis --x64 --publish never
+
+      - name: Release anlegen
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          $tag = "v$version"
+          $exe = "dist/Buddy-HQ-Setup.exe"
+          if (-not (Test-Path $exe)) { throw "Installer fehlt: $exe" }
+          $hash = (Get-FileHash $exe -Algorithm SHA256).Hash
+          $notes = "Buddy HQ $version`n`nSHA-256 der .exe: $hash`n`nNicht code-signiert: Windows SmartScreen warnt beim ersten Start."
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -eq 0) { throw "Release $tag gibt es schon. Version in package.json erhöhen." }
+          gh release create $tag $exe --title "Buddy HQ $version" --notes $notes --target $env:GITHUB_SHA
+          Write-Host "Release $tag angelegt."

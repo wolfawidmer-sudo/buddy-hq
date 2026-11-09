@@ -1,0 +1,721 @@
+/* Buddy HQ
+   Ruhig und typografisch. Schwarz wie das Island, Weiss und Grau für alles andere.
+   Grün und Rot nur für Gewinn und Verlust (und das Commit-Raster, auf Wunsch).
+   Keine Karten, keine Verläufe, keine Glows. Linien statt Flächen. */
+
+@font-face {
+  font-family: 'Bricolage';
+  src: url('fonts/bricolage-grotesque.woff2') format('woff2');
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+:root {
+  --display: 'Bricolage', 'Segoe UI Variable Display', 'Segoe UI', system-ui, sans-serif;
+  --text: 'Segoe UI', 'Segoe UI Variable Text', system-ui, sans-serif;
+  --mono: 'Cascadia Mono', 'Cascadia Code', Consolas, ui-monospace, monospace;
+  --side: 208px;
+  --pad: 56px;
+  --measure: 960px;
+}
+
+:root[data-theme='dark'] {
+  --bg: #000000;
+  --ink: #f2f2f7;
+  --ink-2: #a3a3a8;
+  --ink-3: #6b6b70;
+  --rule: #222224;
+  --rule-strong: #3a3a3d;
+  --field: #121214;
+  --gain: #4fd480;
+  --loss: #ff6b5e;
+  --cell-0: #18181a;
+  --cell-1: #0e4429;
+  --cell-2: #006d32;
+  --cell-3: #26a641;
+  --cell-4: #39d353;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --bg: #f7f7f5;
+  --ink: #111113;
+  --ink-2: #55555a;
+  --ink-3: #8b8b90;
+  --rule: #e3e3e0;
+  --rule-strong: #c9c9c6;
+  --field: #ffffff;
+  --gain: #1d8a4b;
+  --loss: #cf3b2d;
+  --cell-0: #ebedf0;
+  --cell-1: #9be9a8;
+  --cell-2: #40c463;
+  --cell-3: #30a14e;
+  --cell-4: #216e39;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 14px/1.5 var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+h1 {
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+h2 {
+  font-size: 17px;
+  line-height: 1.3;
+  margin-bottom: 12px;
+}
+
+p {
+  margin: 0 0 8px;
+  max-width: 70ch;
+}
+
+a,
+.link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+}
+
+a:hover,
+.link:hover {
+  text-decoration-color: var(--ink);
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+.faint {
+  color: var(--ink-3);
+}
+
+.num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ---------- Formulare ---------- */
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--ink-2);
+  margin: 14px 0 6px;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='date'],
+select {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  background: var(--field);
+  color: var(--ink);
+  font: inherit;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid var(--rule-strong);
+  background: transparent;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.btn:hover {
+  border-color: var(--ink-2);
+}
+
+.btn.primary {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.btn.primary:hover {
+  opacity: 0.88;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn.danger {
+  color: var(--loss);
+  border-color: var(--rule-strong);
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.form-error {
+  color: var(--loss);
+  min-height: 21px;
+  margin-top: 10px;
+}
+
+.check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 6px 0;
+  color: var(--ink);
+  font-size: 14px;
+}
+
+/* ---------- Anmelden / Einrichten ---------- */
+
+.gate {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 40px;
+}
+
+.gate-inner {
+  width: 340px;
+}
+
+.gate h1 {
+  font-size: 34px;
+  margin-bottom: 6px;
+}
+
+.gate .lede {
+  color: var(--ink-2);
+  margin-bottom: 18px;
+}
+
+.gate .actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gate .forgot {
+  margin-top: 36px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* ---------- Grundgerüst ---------- */
+
+.shell {
+  display: grid;
+  grid-template-columns: var(--side) 1fr;
+  height: 100vh;
+}
+
+.side {
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  padding: 22px 12px 16px;
+  overflow-y: auto;
+}
+
+.brand {
+  font-family: var(--display);
+  font-weight: 650;
+  font-size: 17px;
+  padding: 0 10px 18px;
+}
+
+.nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink-2);
+  text-align: left;
+}
+
+.nav button:hover {
+  color: var(--ink);
+}
+
+.nav button[aria-current='page'] {
+  color: var(--ink);
+  background: var(--field);
+}
+
+.nav .sep {
+  height: 1px;
+  background: var(--rule);
+  margin: 10px 10px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--ink-2);
+}
+
+.dot.off {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+}
+
+.dot.bad {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+
+.dot.none {
+  background: transparent;
+}
+
+.side .bottom {
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.main {
+  overflow-y: auto;
+}
+
+.page {
+  max-width: calc(var(--measure) + var(--pad) * 2);
+  padding: 36px var(--pad) 72px;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 28px;
+}
+
+.page-head .sub {
+  color: var(--ink-2);
+  margin-top: 4px;
+}
+
+section {
+  margin-top: 40px;
+}
+
+/* ---------- Startansicht ---------- */
+
+.periods {
+  display: flex;
+  gap: 22px;
+}
+
+.periods button {
+  border: 0;
+  background: none;
+  padding: 4px 0;
+  color: var(--ink-3);
+  border-bottom: 1.5px solid transparent;
+}
+
+.periods button:hover {
+  color: var(--ink);
+}
+
+.periods button[aria-pressed='true'] {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.hero {
+  margin-top: 44px;
+}
+
+.hero .label {
+  font-family: var(--display);
+  font-size: 17px;
+  color: var(--ink-2);
+}
+
+.hero .figure {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(56px, 8.4vw, 112px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin: 6px 0 14px;
+  white-space: nowrap;
+}
+
+.hero .figure.gain {
+  color: var(--gain);
+}
+
+.hero .figure.loss {
+  color: var(--loss);
+}
+
+.hero .figure.none {
+  color: var(--ink-3);
+}
+
+.hero .equation {
+  color: var(--ink-2);
+  font-size: 15px;
+}
+
+.hero .equation .num {
+  color: var(--ink);
+}
+
+.notice {
+  margin-top: 18px;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--ink);
+  max-width: 70ch;
+}
+
+.notice ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  color: var(--ink-2);
+}
+
+.meta-line {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--ink-3);
+}
+
+/* ---------- Diagramm ---------- */
+
+.chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.page-top {
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+}
+
+section.first {
+  margin-top: 0;
+}
+
+.chart .bar-rev {
+  fill: var(--ink);
+}
+
+.chart .bar-cost {
+  fill: var(--ink-3);
+}
+
+.chart .axis {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+
+.chart text {
+  fill: var(--ink-3);
+  font: 11px var(--mono);
+}
+
+.legend {
+  display: flex;
+  gap: 18px;
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-bottom: 10px;
+}
+
+.legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+
+.legend .rev {
+  background: var(--ink);
+}
+
+.legend .cost {
+  background: var(--ink-3);
+}
+
+/* ---------- Tabellen ---------- */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  font-weight: 400;
+  color: var(--ink-3);
+  font-size: 13px;
+  padding: 0 12px 8px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+td {
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+td.r,
+th.r {
+  text-align: right;
+  padding-right: 0;
+}
+
+.origin {
+  color: var(--ink-3);
+}
+
+.origin.unavailable {
+  color: var(--ink);
+}
+
+/* Definitionen (Detailseiten) */
+
+.facts {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  margin: 0;
+}
+
+.facts dt,
+.facts dd {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--rule);
+  margin: 0;
+}
+
+.facts dt {
+  color: var(--ink-2);
+}
+
+/* ---------- Commit-Raster ---------- */
+
+.activity {
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.activity svg {
+  display: block;
+}
+
+.activity .c0 {
+  fill: var(--cell-0);
+}
+.activity .c1 {
+  fill: var(--cell-1);
+}
+.activity .c2 {
+  fill: var(--cell-2);
+}
+.activity .c3 {
+  fill: var(--cell-3);
+}
+.activity .c4 {
+  fill: var(--cell-4);
+}
+
+.activity text {
+  fill: var(--ink-3);
+  font: 10px var(--text);
+}
+
+.scale {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 8px;
+}
+
+.scale span.sw {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.sw.c0 {
+  background: var(--cell-0);
+}
+.sw.c1 {
+  background: var(--cell-1);
+}
+.sw.c2 {
+  background: var(--cell-2);
+}
+.sw.c3 {
+  background: var(--cell-3);
+}
+.sw.c4 {
+  background: var(--cell-4);
+}
+
+/* ---------- Einstellungen ---------- */
+
+.key-row {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.key-row .head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.key-row .entry {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+details summary {
+  cursor: pointer;
+  color: var(--ink-2);
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+details ol {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--ink-2);
+}
+
+details li {
+  margin: 4px 0;
+}
+
+.result {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.result.bad {
+  color: var(--ink);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+}
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 0 12px;
+}
+
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 10px 14px;
+  border-radius: 6px;
+  max-width: 420px;
+}
+
+@media (max-width: 1100px) {
+  :root {
+    --pad: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

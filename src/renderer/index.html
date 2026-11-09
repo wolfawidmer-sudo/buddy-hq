@@ -1,16 +1,17 @@
 <!doctype html>
-<html lang="de-CH">
+<html lang="de-CH" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'"
     />
+    <meta name="color-scheme" content="dark light" />
     <title>Buddy HQ</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <main>
-      <p>Buddy HQ – Gerüst. Die Oberfläche folgt in Phase 4.</p>
-    </main>
+  <body data-screen="loading">
+    <div id="app" aria-live="polite"></div>
+    <script src="app.js"></script>
   </body>
 </html>
