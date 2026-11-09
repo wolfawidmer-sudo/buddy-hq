@@ -10,7 +10,7 @@ const DEFAULTS = Object.freeze({
   theme: 'dark',
   period: 'month',
   supabaseRef: 'ifbpbsbgdpnxmwtycjqr',
-  railwayProjectId: '',
+  railwayProjectId: 'e91889d9-5698-4e40-a877-11720c79bf61', // «motivated-spontaneity», von Wolf bestätigt (9.11.)
   healthUrl: 'https://api.buddy-island.top/health',
   githubOwner: 'wolfawidmer-sudo',
   githubRepo: 'buddy-island',

@@ -59,7 +59,7 @@ const KEY_HELP = {
       'Wähle bei «Workspace» deinen Workspace (wolof_\'s Projects), Name: Buddy HQ.',
       'Klick auf «Create», kopiere den Token und füge ihn hier ein.',
       'Hinweis: Railway kennt keine Nur-Lese-Tokens. Der Token kann den ganzen Workspace verwalten. Buddy HQ liest nur.',
-      'Trag unten die Projekt-ID ein. Dein einziges Projekt heisst «motivated-spontaneity» (ID e91889d9-5698-4e40-a877-11720c79bf61). Prüf, ob das dein Buddy-Backend ist.',
+      'Die Projekt-ID deines Buddy-Backends («motivated-spontaneity») ist schon eingetragen.',
     ],
   },
   resend: {
